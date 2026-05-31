@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import SectionHeader from '../components/SectionHeader.jsx';
-import { crosswordPuzzleBank } from '../data/crosswordData.js';
+import { crosswordPuzzleBank, crosswordPuzzleCount } from '../data/crosswordData.js';
 import { titleCase } from '../utils/random.js';
 
 const cellId = (r, c) => `${r}-${c}`;
@@ -39,10 +39,7 @@ function findWords(rows, size) {
       const start = c;
       let answer = '';
       while (c < size && !isBlock(rows, r, c)) answer += rows[r][c++];
-      if (answer.length > 1) {
-        const num = numberMap.get(cellId(r, start));
-        found.push({ number: num, direction: 'across', answer, cells: answer.split('').map((_, i) => [r, start + i]) });
-      }
+      if (answer.length > 1) found.push({ number: numberMap.get(cellId(r, start)), direction: 'across', answer, cells: answer.split('').map((_, i) => [r, start + i]) });
     }
   }
 
@@ -53,10 +50,7 @@ function findWords(rows, size) {
       const start = r;
       let answer = '';
       while (r < size && !isBlock(rows, r, c)) answer += rows[r++][c];
-      if (answer.length > 1) {
-        const num = numberMap.get(cellId(start, c));
-        found.push({ number: num, direction: 'down', answer, cells: answer.split('').map((_, i) => [start + i, c]) });
-      }
+      if (answer.length > 1) found.push({ number: numberMap.get(cellId(start, c)), direction: 'down', answer, cells: answer.split('').map((_, i) => [start + i, c]) });
     }
   }
 
@@ -70,10 +64,10 @@ export default function CartoonCrossword() {
   const [selected, setSelected] = useState(null);
   const [direction, setDirection] = useState('across');
   const [checked, setChecked] = useState(false);
-  const [message, setMessage] = useState('Crossword loaded. Pick a clue or tap the grid.');
+  const [message, setMessage] = useState(`Crossword bank loaded: ${crosswordPuzzleCount} generated puzzles.`);
   const [messageType, setMessageType] = useState('good');
 
-  const bank = crosswordPuzzleBank[difficulty];
+  const bank = crosswordPuzzleBank[difficulty] || crosswordPuzzleBank.easy;
   const puzzle = bank[indexes[difficulty] % bank.length];
   const rows = useMemo(() => normalizeRows(puzzle), [puzzle]);
   const { words, numberMap } = useMemo(() => findWords(rows, puzzle.size), [rows, puzzle.size]);
@@ -84,7 +78,18 @@ export default function CartoonCrossword() {
     setSelected(null);
     setDirection('across');
     setChecked(false);
-    setMessage('Crossword loaded. Pick a clue or tap the grid.');
+    setMessage(`Loaded ${titleCase(nextDifficulty)} crossword. Pick a clue or tap the grid.`);
+    setMessageType('good');
+  }
+
+  function newLevel() {
+    const length = crosswordPuzzleBank[difficulty].length;
+    setIndexes(previous => ({ ...previous, [difficulty]: (previous[difficulty] + 1) % length }));
+    setValues({});
+    setSelected(null);
+    setDirection('across');
+    setChecked(false);
+    setMessage(`New ${titleCase(difficulty)} crossword loaded from the 1,000 puzzle bank.`);
     setMessageType('good');
   }
 
@@ -154,13 +159,13 @@ export default function CartoonCrossword() {
     }
     setChecked(true);
     if (wrong) {
-      setMessage(`${wrong} wrong letter${wrong > 1 ? 's' : ''}.`);
+      setMessage(`${wrong} wrong letter${wrong > 1 ? 's' : ''}. Keep solving.`);
       setMessageType('bad');
     } else if (empty) {
       setMessage(`No wrong letters. ${empty} blank square${empty > 1 ? 's' : ''} left.`);
       setMessageType('good');
     } else {
-      setMessage('Crossword complete. Cartoon logic locked in.');
+      setMessage('Crossword complete. Cartoon logic locked in. Hit New Level for another puzzle.');
       setMessageType('good');
     }
   }
@@ -176,6 +181,7 @@ export default function CartoonCrossword() {
   }
 
   const word = activeWord();
+  const completeIndex = indexes[difficulty] + 1;
 
   return (
     <section className="crossword-panel" aria-label="Cartoon crossword puzzle">
@@ -192,18 +198,14 @@ export default function CartoonCrossword() {
         eyebrow="Bottom Puzzle // Cartoon Logic"
         title="Cartoon Crossword"
       >
-        Cartoon references in a real crossword grid. Pick a clue, type letters, and check your work.
+        A generated bank of {crosswordPuzzleCount} black-and-white crossword puzzles about Cartoon Network characters, action icons, objects, places, adult animation, Disney, and horror references.
       </SectionHeader>
       <div className="crossword-actions">
         <button onClick={checkPuzzle} type="button">Check</button>
         <button onClick={revealLetter} type="button">Reveal Letter</button>
         <button onClick={() => resetBoard(difficulty)} type="button">Clear</button>
-        <button onClick={() => {
-          setIndexes(previous => ({ ...previous, [difficulty]: (previous[difficulty] + 1) % bank.length }));
-          setValues({});
-          setChecked(false);
-        }} type="button">New Level</button>
-        <span className="crossword-level">{titleCase(difficulty)} Level {indexes[difficulty] + 1}/{bank.length}</span>
+        <button onClick={newLevel} type="button">New Level</button>
+        <span className="crossword-level">{titleCase(difficulty)} Level {completeIndex}/{bank.length} • {puzzle.title}</span>
       </div>
       <div className="crossword-layout">
         <div
@@ -226,6 +228,7 @@ export default function CartoonCrossword() {
                 {!block && numberMap.get(id) ? <span className="crossword-number">{numberMap.get(id)}</span> : null}
                 {!block ? (
                   <input
+                    aria-label={`Crossword cell row ${r + 1} column ${c + 1}`}
                     data-crossword-input={id}
                     inputMode="text"
                     maxLength={1}
