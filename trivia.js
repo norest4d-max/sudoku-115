@@ -61,6 +61,7 @@
   let current = null;
   let locked = false;
   let deck = [];
+  let advanceTimer = null;
   const maxCards = 20;
 
   const shuffle = (arr) => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(pair => pair[1]);
@@ -94,6 +95,7 @@
   }
 
   function nextCard() {
+    clearTimeout(advanceTimer);
     if (asked >= maxCards) {
       finishRun();
       return;
@@ -138,7 +140,7 @@
       score += gained;
       btn.classList.add('correct');
       if (streak > 0 && streak % 3 === 0) level = Math.min(5, level + 1);
-      setMessage(`Correct. +${gained} points. Harder cards unlock through streaks.`, 'good');
+      setMessage(`Correct. +${gained} points. Next card loading...`, 'good');
     } else {
       wrong++;
       streak = 0;
@@ -146,13 +148,15 @@
       score -= lost;
       btn.classList.add('wrong');
       level = Math.max(1, level - 1);
-      setMessage(`Wrong. -${lost} points. Correct answer: ${current.a}`, 'bad');
+      setMessage(`Wrong. -${lost} points. Correct: ${current.a}. Next card loading...`, 'bad');
     }
 
     syncStats();
+    advanceTimer = setTimeout(() => nextCard(), isCorrect ? 900 : 1500);
   }
 
   function finishRun() {
+    clearTimeout(advanceTimer);
     locked = true;
     current = null;
     diffEl.textContent = 'Run Complete';
@@ -163,6 +167,7 @@
   }
 
   function startRun() {
+    clearTimeout(advanceTimer);
     level = 1;
     score = 0;
     streak = 0;
@@ -179,6 +184,7 @@
   startBtn.addEventListener('click', startRun);
   resetBtn.addEventListener('click', startRun);
   nextBtn.addEventListener('click', () => {
+    clearTimeout(advanceTimer);
     if (!current && asked === 0) startRun();
     else nextCard();
   });
