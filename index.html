@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#050505" />
   <title>Sudoku 115 — Paper Ink</title>
-  <link rel="stylesheet" href="./style.css?v=3" />
+  <link rel="stylesheet" href="./style.css?v=4" />
 </head>
 <body>
   <main class="app-shell">
@@ -62,7 +62,28 @@
         </div>
       </aside>
     </section>
+
+    <section class="pattern-panel panel" aria-label="Pattern Drill Simon Says game">
+      <div class="pattern-header">
+        <div>
+          <p class="eyebrow">Bottom Drill // Memory Pattern</p>
+          <h2>Pattern Drill</h2>
+          <p>Watch the ink lights. Repeat the path. Wrong taps do not fail you — they replay and train the pattern.</p>
+        </div>
+        <div class="pattern-controls">
+          <button id="patternStartBtn">Start Pattern</button>
+          <button id="patternReplayBtn">Replay</button>
+        </div>
+      </div>
+      <div class="pattern-stats">
+        <span id="patternLevel">Level 1</span>
+        <span id="patternStreak">Comfort: 0/3</span>
+        <span id="patternSpeed">Speed: Calm</span>
+      </div>
+      <div id="patternGrid" class="pattern-grid" aria-label="Simon says pattern grid"></div>
+      <p id="patternMessage" class="message">Press Start Pattern. Match the flashed path.</p>
+    </section>
   </main>
-  <script defer src="./script.js?v=3"></script>
+  <script defer src="./script.js?v=4"></script>
 </body>
 </html>
