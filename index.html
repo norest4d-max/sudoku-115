@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#050505" />
-  <title>Paper Ink Sudoku</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Sudoku 115 — Paper Ink</title>
+  <link rel="stylesheet" href="./style.css?v=3" />
 </head>
 <body>
   <main class="app-shell">
@@ -40,19 +40,17 @@
           <span id="timer">00:00</span>
           <span id="mistakes">Mistakes: 0</span>
         </div>
-        <div id="board" class="sudoku-board" aria-label="Sudoku board"></div>
-        <p id="message" class="message">Select a cell to begin.</p>
+        <div id="board" class="sudoku-board" aria-label="Sudoku board">Loading grid...</div>
+        <p id="message" class="message">Loading Sudoku...</p>
       </section>
 
       <aside class="side panel">
         <h2>Ink Keys</h2>
         <div id="numberPad" class="number-pad" aria-label="Number pad"></div>
-
         <label class="toggle">
           <input type="checkbox" id="notesToggle" />
           <span>Notes mode</span>
         </label>
-
         <div class="rules">
           <h3>Proper Sudoku Maneuver</h3>
           <ol>
@@ -65,7 +63,6 @@
       </aside>
     </section>
   </main>
-
-  <script src="script.js"></script>
+  <script defer src="./script.js?v=3"></script>
 </body>
 </html>
