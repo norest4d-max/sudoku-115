@@ -1,0 +1,47 @@
+.section-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.section-header h2 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  text-transform: uppercase;
+  line-height: .9;
+}
+
+.section-header p:not(.eyebrow) {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.game-stack {
+  margin-top: 18px;
+}
+
+.game-stack > section + section {
+  margin-top: 20px;
+}
+
+@media (max-width: 820px) {
+  .section-header {
+    grid-template-columns: 1fr;
+  }
+
+  .section-actions {
+    justify-content: stretch;
+  }
+
+  .section-actions button {
+    flex: 1;
+  }
+}

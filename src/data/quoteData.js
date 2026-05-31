@@ -1,22 +1,4 @@
-(() => {
-  const panel = document.getElementById('quotePanel');
-  const startBtn = document.getElementById('quoteStartBtn');
-  const nextBtn = document.getElementById('quoteNextBtn');
-  const resetBtn = document.getElementById('quoteResetBtn');
-  const levelEl = document.getElementById('quoteLevel');
-  const scoreEl = document.getElementById('quoteScore');
-  const streakEl = document.getElementById('quoteStreak');
-  const bankEl = document.getElementById('quoteBank');
-  const metaEl = document.getElementById('quoteMeta');
-  const lineEl = document.getElementById('quoteLine');
-  const promptEl = document.getElementById('quotePrompt');
-  const choicesEl = document.getElementById('quoteChoices');
-  const messageEl = document.getElementById('quoteMessage');
-  const filterBtns = [...document.querySelectorAll('.quote-filter')];
-
-  if (!panel || !startBtn || !nextBtn || !resetBtn || !choicesEl) return;
-
-  const ADULT_SWIM = [
+export const adultSwimQuoteSources = [
     ['Rick Sanchez', 'Rick and Morty', 'reckless genius', 'portal math', 'the garage', 2],
     ['Morty Smith', 'Rick and Morty', 'panicked loyalty', 'a school backpack', 'another dimension', 1],
     ['Summer Smith', 'Rick and Morty', 'teenage nerve', 'a stolen gadget', 'the spaceship', 1],
@@ -69,7 +51,7 @@
     ['Pickles', 'Metalocalypse', 'drummer exhaustion', 'a tour schedule', 'the backstage room', 2]
   ];
 
-  const HORROR_MOVIES = [
+export const horrorMovieQuoteSources = [
     ['Halloween', 'masked patience', 'a kitchen knife', 'Haddonfield', 1],
     ['Scream', 'phone-call terror', 'a voice changer', 'a suburban hallway', 1],
     ['A Nightmare on Elm Street', 'dream punishment', 'a bladed glove', 'the boiler room', 1],
@@ -122,7 +104,7 @@
     ['Jaws', 'summer-water panic', 'a closed beach sign', 'Amity Island', 1]
   ];
 
-  const ADULT_TEMPLATES = [
+export const adultSwimQuoteTemplates = [
     'I brought {object} into {place}, and now everyone is pretending my {trait} is the problem.',
     'If {place} gets any worse, I am blaming the person who doubted my {trait}.',
     'Nobody asked for {object}, but this situation clearly needed my {trait}.',
@@ -135,7 +117,7 @@
     'Write this down: {object} plus {trait} equals a perfectly avoidable disaster.'
   ];
 
-  const HORROR_TEMPLATES = [
+export const horrorQuoteTemplates = [
     'The minute {object} showed up in {place}, everybody should have left.',
     'Nothing good waits in {place} when {object} is already in the room.',
     'You can survive {place}, but not if you ignore {object} and the {trait}.',
@@ -148,244 +130,46 @@
     'Nobody believes the danger until {trait} turns {object} into proof.'
   ];
 
-  const maxCards = 30;
-  const STORAGE_KEY = 'sudoku115QuoteStats';
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+function fill(template, entry) {
+  return template
+    .replaceAll('{trait}', entry.trait)
+    .replaceAll('{object}', entry.object)
+    .replaceAll('{place}', entry.place);
+}
 
-  let filter = 'mixed';
-  let level = 1;
-  let score = 0;
-  let streak = 0;
-  let asked = 0;
-  let correct = 0;
-  let wrong = 0;
-  let current = null;
-  let locked = false;
-  let deck = [];
-  let history = [];
-  let advanceTimer = null;
+export function buildQuoteBank() {
+  const cards = [];
+  let id = 1;
 
-  const shuffle = (arr) => {
-    const copy = [...arr];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  };
-
-  function fill(template, entry) {
-    return template
-      .replaceAll('{trait}', entry.trait)
-      .replaceAll('{object}', entry.object)
-      .replaceAll('{place}', entry.place);
-  }
-
-  function makeBank() {
-    const cards = [];
-    let id = 1;
-
-    ADULT_SWIM.forEach(([answer, source, trait, object, place, baseLevel], entryIndex) => {
-      ADULT_TEMPLATES.forEach((template, templateIndex) => {
-        cards.push({
-          id: `quote-${String(id++).padStart(4, '0')}`,
-          type: 'adult',
-          answer,
-          source,
-          level: Math.min(10, baseLevel + Math.floor(templateIndex / 3)),
-          line: fill(template, { trait, object, place }),
-          prompt: 'Which Adult Swim character said it?',
-          seed: `${entryIndex}-${templateIndex}`
-        });
+  adultSwimQuoteSources.forEach(([answer, source, trait, object, place, baseLevel], entryIndex) => {
+    adultSwimQuoteTemplates.forEach((template, templateIndex) => {
+      cards.push({
+        id: `quote-${String(id++).padStart(4, '0')}`,
+        type: 'adult',
+        answer,
+        source,
+        level: Math.min(10, baseLevel + Math.floor(templateIndex / 3)),
+        line: fill(template, { trait, object, place }),
+        prompt: 'Which Adult Swim character said it?',
+        seed: `${entryIndex}-${templateIndex}`
       });
     });
-
-    HORROR_MOVIES.forEach(([answer, trait, object, place, baseLevel], entryIndex) => {
-      HORROR_TEMPLATES.forEach((template, templateIndex) => {
-        cards.push({
-          id: `quote-${String(id++).padStart(4, '0')}`,
-          type: 'horror',
-          answer,
-          source: 'Horror Movie',
-          level: Math.min(10, baseLevel + Math.floor(templateIndex / 3)),
-          line: fill(template, { trait, object, place }),
-          prompt: 'Which horror movie owns this line?',
-          seed: `${entryIndex}-${templateIndex}`
-        });
-      });
-    });
-
-    return cards;
-  }
-
-  const QUOTES = makeBank();
-
-  function setMessage(text, type = '') {
-    messageEl.textContent = text;
-    messageEl.className = `message ${type}`.trim();
-  }
-
-  function saveStats() {
-    saved.bestScore = Math.max(saved.bestScore || 0, score);
-    saved.bestStreak = Math.max(saved.bestStreak || 0, streak);
-    saved.plays = (saved.plays || 0) + 1;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-  }
-
-  function syncStats() {
-    levelEl.textContent = `Level ${level}`;
-    scoreEl.textContent = `Score ${score}`;
-    streakEl.textContent = `Streak ${streak}`;
-    bankEl.textContent = `Bank ${QUOTES.length}`;
-  }
-
-  function filteredCards() {
-    if (filter === 'adult') return QUOTES.filter(card => card.type === 'adult');
-    if (filter === 'horror') return QUOTES.filter(card => card.type === 'horror');
-    return QUOTES;
-  }
-
-  function getPool() {
-    const maxLevel = Math.min(10, level + 2);
-    const bank = filteredCards();
-    const fresh = bank.filter(card => card.level <= maxLevel && !history.includes(card.id));
-    return fresh.length ? fresh : bank.filter(card => card.level <= maxLevel);
-  }
-
-  function refillDeck() {
-    deck = shuffle(getPool());
-  }
-
-  function choicesFor(card) {
-    const sameType = filteredCards()
-      .filter(other => other.type === card.type && other.answer !== card.answer)
-      .map(other => other.answer);
-    const unique = [...new Set(sameType)];
-    return shuffle([card.answer, ...shuffle(unique).slice(0, 2)]);
-  }
-
-  function animateCard() {
-    const card = panel.querySelector('.quote-card');
-    if (!card) return;
-    card.classList.remove('flip');
-    void card.offsetWidth;
-    card.classList.add('flip');
-  }
-
-  function nextCard() {
-    clearTimeout(advanceTimer);
-
-    if (asked >= maxCards) {
-      finishRun();
-      return;
-    }
-
-    locked = false;
-    if (!deck.length) refillDeck();
-    current = deck.pop();
-
-    if (!current) {
-      finishRun();
-      return;
-    }
-
-    history.push(current.id);
-    asked++;
-    animateCard();
-    metaEl.textContent = `${current.type === 'adult' ? current.source : 'Horror Movie'} | Difficulty ${current.level}/10 | Card ${asked}/${maxCards}`;
-    lineEl.textContent = current.line;
-    promptEl.textContent = current.prompt;
-    choicesEl.innerHTML = '';
-
-    choicesFor(current).forEach(choice => {
-      const btn = document.createElement('button');
-      btn.className = 'quote-choice';
-      btn.type = 'button';
-      btn.textContent = choice;
-      btn.addEventListener('click', () => chooseAnswer(btn, choice));
-      choicesEl.appendChild(btn);
-    });
-
-    setMessage('Choose one of three.');
-    syncStats();
-  }
-
-  function chooseAnswer(btn, choice) {
-    if (locked || !current) return;
-    locked = true;
-    const isCorrect = choice === current.answer;
-
-    [...choicesEl.children].forEach(choiceBtn => {
-      choiceBtn.disabled = true;
-      if (choiceBtn.textContent === current.answer) choiceBtn.classList.add('correct');
-    });
-
-    if (isCorrect) {
-      correct++;
-      streak++;
-      const gained = 15 + current.level * 5 + streak * 2;
-      score += gained;
-      btn.classList.add('correct');
-      if (streak > 0 && streak % 3 === 0) level = Math.min(10, level + 1);
-      setMessage(`Correct. +${gained} points.`, 'good');
-    } else {
-      wrong++;
-      streak = 0;
-      const lost = 8 + current.level * 2;
-      score -= lost;
-      level = Math.max(1, level - 1);
-      btn.classList.add('wrong');
-      setMessage(`Wrong. Correct answer: ${current.answer}.`, 'bad');
-    }
-
-    syncStats();
-    advanceTimer = setTimeout(nextCard, isCorrect ? 900 : 1550);
-  }
-
-  function finishRun() {
-    clearTimeout(advanceTimer);
-    locked = true;
-    saveStats();
-    current = null;
-    metaEl.textContent = 'Run Complete';
-    lineEl.textContent = `Final Score: ${score}`;
-    promptEl.textContent = `Correct ${correct} | Wrong ${wrong} | Best streak saved ${saved.bestStreak || streak || 0}`;
-    choicesEl.innerHTML = '';
-    setMessage('Quote run complete. Press Reset to play again.', 'good');
-    syncStats();
-  }
-
-  function startRun() {
-    clearTimeout(advanceTimer);
-    level = 1;
-    score = 0;
-    streak = 0;
-    asked = 0;
-    correct = 0;
-    wrong = 0;
-    current = null;
-    locked = false;
-    deck = [];
-    history = [];
-    syncStats();
-    nextCard();
-  }
-
-  function setFilter(nextFilter) {
-    filter = nextFilter;
-    filterBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.quoteFilter === filter));
-    startRun();
-  }
-
-  startBtn.addEventListener('click', startRun);
-  resetBtn.addEventListener('click', startRun);
-  nextBtn.addEventListener('click', () => {
-    clearTimeout(advanceTimer);
-    if (!current && asked === 0) startRun();
-    else nextCard();
   });
-  filterBtns.forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.quoteFilter)));
 
-  syncStats();
-  setMessage(`Ready. ${QUOTES.length} quote cards loaded.`);
-})();
+  horrorMovieQuoteSources.forEach(([answer, trait, object, place, baseLevel], entryIndex) => {
+    horrorQuoteTemplates.forEach((template, templateIndex) => {
+      cards.push({
+        id: `quote-${String(id++).padStart(4, '0')}`,
+        type: 'horror',
+        answer,
+        source: 'Horror Movie',
+        level: Math.min(10, baseLevel + Math.floor(templateIndex / 3)),
+        line: fill(template, { trait, object, place }),
+        prompt: 'Which horror movie owns this line?',
+        seed: `${entryIndex}-${templateIndex}`
+      });
+    });
+  });
+
+  return cards;
+}

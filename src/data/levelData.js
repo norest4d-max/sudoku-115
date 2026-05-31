@@ -1,0 +1,43 @@
+export const sudokuLevels = [
+  { id: 'warmup', label: 'Warmup', removals: 30, xp: 25 },
+  { id: 'easy', label: 'Easy', removals: 38, xp: 45 },
+  { id: 'steady', label: 'Steady', removals: 44, xp: 70 },
+  { id: 'medium', label: 'Medium', removals: 48, xp: 95 },
+  { id: 'hard', label: 'Hard', removals: 54, xp: 145 },
+  { id: 'expert', label: 'Expert', removals: 58, xp: 205 },
+  { id: 'master', label: 'Master', removals: 61, xp: 275 },
+  { id: 'legend', label: 'Legend', removals: 63, xp: 360 }
+];
+
+export const patternLevels = [
+  ['Warm Trace', 3, 3, 820, 'Slow'],
+  ['Corner Steps', 3, 4, 780, 'Slow'],
+  ['Short Ink Run', 3, 5, 735, 'Steady'],
+  ['Box Memory', 3, 6, 700, 'Steady'],
+  ['Four Grid Intro', 4, 6, 660, 'Steady'],
+  ['Cross Flash', 4, 7, 625, 'Steady'],
+  ['Double Back', 4, 8, 590, 'Quick'],
+  ['Long Corner', 4, 9, 555, 'Quick'],
+  ['Five Grid Intro', 5, 9, 520, 'Fast'],
+  ['Skip Trace', 5, 10, 490, 'Fast'],
+  ['Wide Sweep', 5, 11, 460, 'Fast'],
+  ['Tight Recall', 5, 12, 430, 'Fast'],
+  ['Six Grid Intro', 6, 12, 405, 'Extreme'],
+  ['Column Storm', 6, 13, 382, 'Extreme'],
+  ['Row Storm', 6, 14, 360, 'Extreme'],
+  ['Mirror Walk', 6, 15, 340, 'Extreme'],
+  ['Long Form', 6, 16, 320, 'Nightmare'],
+  ['Needle Thread', 6, 17, 300, 'Nightmare'],
+  ['Blackout Path', 6, 18, 282, 'Nightmare'],
+  ['Full Table', 6, 19, 265, 'Nightmare'],
+  ['Ink Sprint', 6, 20, 250, 'Nightmare'],
+  ['Hard Recall', 6, 21, 238, 'Nightmare'],
+  ['Pressure Loop', 6, 22, 226, 'Nightmare'],
+  ['No Drift', 6, 23, 215, 'Nightmare'],
+  ['Final Ledger', 6, 24, 205, 'Nightmare'],
+  ['Paper Cut', 6, 25, 196, 'Nightmare'],
+  ['Last Page', 6, 26, 188, 'Nightmare'],
+  ['Deep Focus', 6, 27, 180, 'Nightmare'],
+  ['Perfect Ink', 6, 28, 172, 'Nightmare'],
+  ['Endless Gate', 6, 30, 165, 'Endless']
+].map(([name, size, length, speed, label], index) => ({ level: index + 1, name, size, length, speed, label }));
