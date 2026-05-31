@@ -11,42 +11,54 @@
 
   if (!panel || !grid || !startBtn || !replayBtn || !homeBtn) return;
 
+  const STORAGE_KEY = 'sudoku115PatternStats';
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"bestLevel":1,"bestScore":0,"games":0}');
+
   let level = 1;
-  let comfort = 0;
+  let score = 0;
   let size = 3;
   let sequence = [];
   let userIndex = 0;
   let acceptingInput = false;
   let playing = false;
+  let gameOver = false;
 
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   const rand = (max) => Math.floor(Math.random() * max);
 
   function sequenceLength() {
-    return Math.min(4 + level, 18);
+    return Math.min(2 + level, 28);
   }
 
   function playbackSpeed() {
-    return Math.max(210, 620 - level * 35);
+    return Math.max(170, 860 - level * 45);
   }
 
   function speedLabel() {
-    if (level < 3) return 'Calm';
-    if (level < 6) return 'Focused';
+    if (level < 3) return 'Slow';
+    if (level < 6) return 'Steady';
     if (level < 10) return 'Fast';
+    if (level < 15) return 'Extreme';
     return 'Nightmare';
   }
 
   function gridSizeForLevel() {
+    if (level >= 13) return 6;
     if (level >= 9) return 5;
     if (level >= 5) return 4;
     return 3;
   }
 
+  function saveStats() {
+    saved.bestLevel = Math.max(saved.bestLevel || 1, level);
+    saved.bestScore = Math.max(saved.bestScore || 0, score);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  }
+
   function updateStats() {
     levelEl.textContent = `Level ${level}`;
-    streakEl.textContent = `Comfort: ${comfort}/3`;
-    speedEl.textContent = `Speed: ${speedLabel()}`;
+    streakEl.textContent = `Pattern: ${userIndex}/${sequence.length || sequenceLength()} • Best L${saved.bestLevel || 1}`;
+    speedEl.textContent = `Speed: ${speedLabel()} • Score ${score}`;
   }
 
   function setMessage(text, type = '') {
@@ -76,9 +88,11 @@
     const total = size * size;
     const length = sequenceLength();
     sequence = [];
+
     for (let i = 0; i < length; i++) {
       let next = rand(total);
       if (i > 0 && next === sequence[i - 1]) next = (next + 1 + rand(total - 1)) % total;
+      if (level >= 7 && i > 1 && next === sequence[i - 2]) next = (next + 2 + rand(total - 2)) % total;
       sequence.push(next);
     }
     userIndex = 0;
@@ -92,9 +106,9 @@
     const tile = tileAt(index);
     if (!tile) return;
     tile.classList.add(className);
-    await sleep(className === 'purple-twitch' ? 180 : playbackSpeed());
+    await sleep(className === 'purple-twitch' ? 160 : playbackSpeed());
     tile.classList.remove(className);
-    await sleep(Math.max(70, playbackSpeed() * 0.28));
+    await sleep(Math.max(55, playbackSpeed() * 0.25));
   }
 
   function setTilesDisabled(disabled) {
@@ -102,12 +116,13 @@
   }
 
   async function playSequence() {
-    if (!sequence.length) return;
+    if (!sequence.length || gameOver) return;
     playing = true;
     acceptingInput = false;
     setTilesDisabled(true);
-    setMessage('Watch the ink lights...', '');
-    await sleep(450);
+    updateStats();
+    setMessage(`Watch ${sequence.length} lights. One mistake = game over.`, '');
+    await sleep(700);
 
     for (const index of sequence) {
       await flashTile(index, 'flash');
@@ -117,7 +132,8 @@
     acceptingInput = true;
     playing = false;
     setTilesDisabled(false);
-    setMessage('Your turn. Repeat the pattern.', 'good');
+    updateStats();
+    setMessage('Your turn. Match the full pattern.', 'good');
   }
 
   function enterPatternMode() {
@@ -132,63 +148,79 @@
     panel.classList.remove('pattern-fullscreen');
     homeBtn.hidden = true;
     acceptingInput = false;
+    playing = false;
     setTilesDisabled(false);
     document.querySelector('.hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  async function startRound({ keepLevel = false } = {}) {
+  async function startGame() {
     if (playing) return;
     enterPatternMode();
-    if (!keepLevel) comfort = 0;
+    level = 1;
+    score = 0;
+    userIndex = 0;
+    gameOver = false;
+    saved.games = (saved.games || 0) + 1;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    await nextLevel();
+  }
+
+  async function nextLevel() {
+    if (gameOver) return;
     buildGrid();
     makeSequence();
     updateStats();
-    setMessage(`Level ${level}: memorize ${sequence.length} lights.`, '');
+    setMessage(`Level ${level}: ${sequence.length} count pattern.`, '');
     await playSequence();
   }
 
   async function handleTilePress(index) {
-    if (!acceptingInput || playing) return;
+    if (!acceptingInput || playing || gameOver) return;
     await flashTile(index, 'purple-twitch');
 
     if (index === sequence[userIndex]) {
       userIndex++;
+      score += 10 + level;
+      updateStats();
+
       if (userIndex >= sequence.length) {
         acceptingInput = false;
-        comfort++;
-        if (comfort >= 3) {
-          level++;
-          comfort = 0;
-          setMessage('Pattern locked in. Level up.', 'good');
-        } else {
-          setMessage('Clean repeat. Again until it feels automatic.', 'good');
-        }
-        updateStats();
-        await sleep(750);
-        await startRound({ keepLevel: true });
+        saveStats();
+        setMessage(`Level ${level} cleared. Pattern gets longer.`, 'good');
+        level++;
+        await sleep(900);
+        await nextLevel();
       } else {
-        setMessage(`${userIndex}/${sequence.length} correct. Keep the rhythm.`, 'good');
+        setMessage(`${userIndex}/${sequence.length} correct. Keep going.`, 'good');
       }
       return;
     }
 
-    const tile = tileAt(index);
-    tile?.classList.add('soft-wrong');
-    setTimeout(() => tile?.classList.remove('soft-wrong'), 250);
-
-    comfort = Math.max(0, comfort - 1);
-    updateStats();
-    acceptingInput = false;
-    setMessage('No fail. Watch it again and match the path.', 'bad');
-    await sleep(600);
-    await playSequence();
+    await triggerGameOver(index);
   }
 
-  startBtn.addEventListener('click', () => startRound());
+  async function triggerGameOver(index) {
+    gameOver = true;
+    acceptingInput = false;
+    playing = false;
+    setTilesDisabled(true);
+
+    const tile = tileAt(index);
+    tile?.classList.add('soft-wrong');
+    setTimeout(() => tile?.classList.remove('soft-wrong'), 350);
+
+    saveStats();
+    setMessage(`GAME OVER — reached Level ${level}, Score ${score}. Press Start Pattern to retry.`, 'bad');
+    updateStats();
+    await sleep(500);
+    setTilesDisabled(false);
+  }
+
+  startBtn.addEventListener('click', startGame);
   replayBtn.addEventListener('click', () => {
     enterPatternMode();
-    if (!sequence.length) {
-      startRound();
+    if (gameOver || !sequence.length) {
+      startGame();
       return;
     }
     playSequence();
@@ -197,5 +229,5 @@
 
   buildGrid();
   updateStats();
-  setMessage('Press Start Pattern. Simon Says begins easy, then adapts.', '');
+  setMessage('Press Start Pattern. Slow first, then longer and harder. One wrong tap ends the run.', '');
 })();
