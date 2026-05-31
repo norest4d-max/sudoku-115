@@ -14,45 +14,822 @@
 
   if (!panel || !startBtn || !nextBtn || !resetBtn || !answersEl) return;
 
-  const QUESTIONS = [
-    { level: 1, cat: 'Boondocks', q: 'Who is Huey Freeman’s younger brother?', a: 'Riley Freeman', wrong: ['Robert Freeman', 'Tom Dubois', 'Ed Wuncler'] },
-    { level: 1, cat: 'Aqua Teen', q: 'Which character is a floating box of fries?', a: 'Frylock', wrong: ['Master Shake', 'Meatwad', 'Carl'] },
-    { level: 1, cat: 'Simpsons', q: 'What is the name of the town where The Simpsons live?', a: 'Springfield', wrong: ['Quahog', 'Arlen', 'South Park'] },
-    { level: 1, cat: 'Family Guy', q: 'What is the Griffin family dog named?', a: 'Brian', wrong: ['Santa’s Little Helper', 'Buckley', 'Mr. Peanutbutter'] },
-    { level: 1, cat: 'King of the Hill', q: 'What does Hank Hill famously sell?', a: 'Propane and propane accessories', wrong: ['Auto parts', 'Lawn mowers', 'Fishing supplies'] },
-    { level: 1, cat: 'Disney', q: 'Which Disney movie features Simba?', a: 'The Lion King', wrong: ['Aladdin', 'Tarzan', 'Hercules'] },
-    { level: 1, cat: 'Horror', q: 'Which horror franchise uses the Ghostface mask?', a: 'Scream', wrong: ['Halloween', 'Saw', 'Friday the 13th'] },
-    { level: 2, cat: 'Aqua Teen', q: 'What neighbor often gets dragged into Aqua Teen chaos?', a: 'Carl Brutananadilewski', wrong: ['Coach McGuirk', 'Brock Samson', 'Principal Skinner'] },
-    { level: 2, cat: 'Boondocks', q: 'Who is Huey and Riley’s grandfather?', a: 'Robert Freeman', wrong: ['Uncle Ruckus', 'Tom Dubois', 'Thugnificent'] },
-    { level: 2, cat: 'Simpsons', q: 'What is the name of Homer’s workplace?', a: 'Springfield Nuclear Power Plant', wrong: ['Planet Express', 'Strickland Propane', 'Quahog Brewery'] },
-    { level: 2, cat: 'Family Guy', q: 'What fictional Rhode Island town is Family Guy set in?', a: 'Quahog', wrong: ['Springfield', 'Arlen', 'Langley Falls'] },
-    { level: 2, cat: 'King of the Hill', q: 'What is Bobby Hill’s relationship to Hank?', a: 'His son', wrong: ['His nephew', 'His neighbor', 'His cousin'] },
-    { level: 2, cat: 'Disney', q: 'Which Disney villain is tied to the sea and contracts?', a: 'Ursula', wrong: ['Maleficent', 'Cruella de Vil', 'Yzma'] },
-    { level: 2, cat: 'Horror', q: 'Which horror film features a cursed videotape?', a: 'The Ring', wrong: ['The Grudge', 'Sinister', 'Insidious'] },
-    { level: 3, cat: 'Boondocks', q: 'Which character is known for deeply internalized prejudice and wild rants?', a: 'Uncle Ruckus', wrong: ['Stinkmeaner', 'A Pimp Named Slickback', 'Ed Wuncler III'] },
-    { level: 3, cat: 'Aqua Teen', q: 'Which Aqua Teen character is a shapeshifting ball of meat?', a: 'Meatwad', wrong: ['Frylock', 'Master Shake', 'Mooninite'] },
-    { level: 3, cat: 'Simpsons', q: 'What instrument does Lisa Simpson play?', a: 'Saxophone', wrong: ['Trumpet', 'Clarinet', 'Trombone'] },
-    { level: 3, cat: 'Family Guy', q: 'Who is Peter Griffin’s wife?', a: 'Lois Griffin', wrong: ['Marge Simpson', 'Peggy Hill', 'Francine Smith'] },
-    { level: 3, cat: 'King of the Hill', q: 'Who is Hank’s chain-smoking wife?', a: 'Peggy Hill', wrong: ['Nancy Gribble', 'Minh Souphanousinphone', 'Luanne Platter'] },
-    { level: 3, cat: 'Disney', q: 'Which Disney film centers on Miguel and Día de los Muertos?', a: 'Coco', wrong: ['Encanto', 'Moana', 'Soul'] },
-    { level: 3, cat: 'Horror', q: 'Which movie features the Lament Configuration puzzle box?', a: 'Hellraiser', wrong: ['Candyman', 'The Thing', 'Event Horizon'] },
-    { level: 4, cat: 'Boondocks', q: 'Which rapper character moves into Woodcrest?', a: 'Thugnificent', wrong: ['Gangstalicious', 'Rollo Goodlove', 'Bushido Brown'] },
-    { level: 4, cat: 'Aqua Teen', q: 'The Mooninites are mainly styled after what old-school visual idea?', a: 'Pixelated arcade graphics', wrong: ['Clay animation', 'Newspaper comics', 'Stop-motion puppets'] },
-    { level: 4, cat: 'Simpsons', q: 'Who owns the Kwik-E-Mart?', a: 'Apu Nahasapeemapetilon', wrong: ['Moe Szyslak', 'Ned Flanders', 'Waylon Smithers'] },
-    { level: 4, cat: 'Family Guy', q: 'Which character is obsessed with world domination as a baby?', a: 'Stewie Griffin', wrong: ['Chris Griffin', 'Meg Griffin', 'Cleveland Brown Jr.'] },
-    { level: 4, cat: 'King of the Hill', q: 'Who is Dale Gribble’s wife?', a: 'Nancy Gribble', wrong: ['Peggy Hill', 'Minh Souphanousinphone', 'Luanne Platter'] },
-    { level: 4, cat: 'Disney', q: 'Which Disney movie features Yzma and Kronk?', a: 'The Emperor’s New Groove', wrong: ['Hercules', 'Treasure Planet', 'Atlantis'] },
-    { level: 4, cat: 'Horror', q: 'Which 1982 film is about an Antarctic imitation threat?', a: 'The Thing', wrong: ['Alien', 'The Fly', 'The Mist'] },
-    { level: 5, cat: 'Boondocks', q: 'Which Boondocks character is a mild attorney often pulled into chaos?', a: 'Tom Dubois', wrong: ['Ed Wuncler', 'Gin Rummy', 'Stinkmeaner'] },
-    { level: 5, cat: 'Aqua Teen', q: 'What is Master Shake best known for behavior-wise?', a: 'Selfish chaotic schemes', wrong: ['Quiet wisdom', 'Strict leadership', 'Heroic planning'] },
-    { level: 5, cat: 'Simpsons', q: 'Who is Mr. Burns’ loyal assistant?', a: 'Waylon Smithers', wrong: ['Lenny Leonard', 'Carl Carlson', 'Barney Gumble'] },
-    { level: 5, cat: 'Family Guy', q: 'Which Family Guy neighbor later got his own spinoff?', a: 'Cleveland Brown', wrong: ['Joe Swanson', 'Glenn Quagmire', 'Mort Goldman'] },
-    { level: 5, cat: 'King of the Hill', q: 'What is Dale Gribble’s exterminator alias?', a: 'Rusty Shackleford', wrong: ['Buck Strickland', 'Octavio', 'Lucky Kleinschmidt'] },
-    { level: 5, cat: 'Disney', q: 'Which film features a Hawaiian girl and Experiment 626?', a: 'Lilo & Stitch', wrong: ['Moana', 'Brother Bear', 'Bolt'] },
-    { level: 5, cat: 'Horror', q: 'Which film uses daylight folk-horror as its main nightmare?', a: 'Midsommar', wrong: ['Hereditary', 'The Witch', 'The Ritual'] }
-  ];
+  const FACTS = [
+    {
+        "cat": "Boondocks",
+        "answer": "Huey Freeman",
+        "clue": "the politically serious older Freeman brother with the afro and revolutionary worldview",
+        "wrong": [
+            "Riley Freeman",
+            "Robert Freeman",
+            "Tom Dubois"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Riley Freeman",
+        "clue": "the younger Freeman brother who idolizes gangster culture and chaos",
+        "wrong": [
+            "Huey Freeman",
+            "Jazmine Dubois",
+            "Uncle Ruckus"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Robert Freeman",
+        "clue": "Huey and Riley's grandfather who moves the family to Woodcrest",
+        "wrong": [
+            "Tom Dubois",
+            "Ed Wuncler",
+            "Thugnificent"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Uncle Ruckus",
+        "clue": "the recurring character known for extreme self-hating rants",
+        "wrong": [
+            "Stinkmeaner",
+            "Bushido Brown",
+            "A Pimp Named Slickback"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Tom Dubois",
+        "clue": "the mild-mannered attorney who is often pulled into the Freeman family's chaos",
+        "wrong": [
+            "Robert Freeman",
+            "Gin Rummy",
+            "Ed Wuncler III"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Jazmine Dubois",
+        "clue": "Tom and Sarah's biracial daughter and Huey's classmate",
+        "wrong": [
+            "Cindy McPhearson",
+            "Sarah Dubois",
+            "Cristal"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Thugnificent",
+        "clue": "the rapper who moves into Woodcrest and disrupts the neighborhood",
+        "wrong": [
+            "Gangstalicious",
+            "Rollo Goodlove",
+            "Macktastic"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Stinkmeaner",
+        "clue": "the blind old man whose fighting spirit becomes a recurring supernatural problem",
+        "wrong": [
+            "Uncle Ruckus",
+            "Bushido Brown",
+            "Colonel H. Stinkmeaner"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "A Pimp Named Slickback",
+        "clue": "the character whose name is meant to be said in full every time",
+        "wrong": [
+            "Thugnificent",
+            "Gangstalicious",
+            "Ed Wuncler III"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Boondocks",
+        "answer": "Woodcrest",
+        "clue": "the suburb where the Freeman family lives in the animated series",
+        "wrong": [
+            "Springfield",
+            "Quahog",
+            "Arlen"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Frylock",
+        "clue": "the floating box of fries who usually acts as the smartest member",
+        "wrong": [
+            "Master Shake",
+            "Meatwad",
+            "Carl"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Master Shake",
+        "clue": "the selfish talking milkshake who causes many of the team's problems",
+        "wrong": [
+            "Frylock",
+            "Meatwad",
+            "Dr. Weird"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Meatwad",
+        "clue": "the simple shapeshifting ball of meat with a childlike personality",
+        "wrong": [
+            "Frylock",
+            "Carl",
+            "Mooninite"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Carl Brutananadilewski",
+        "clue": "the neighbor who suffers from the Aqua Teens' chaos",
+        "wrong": [
+            "Coach McGuirk",
+            "Brock Samson",
+            "Hank Hill"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Mooninites",
+        "clue": "the pixel-styled alien duo who act superior despite being ridiculous",
+        "wrong": [
+            "Plutonians",
+            "Cybernetic Ghost",
+            "Brownie Monsters"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Dr. Weird",
+        "clue": "the scientist whose bizarre experiments open many early episodes",
+        "wrong": [
+            "Steve",
+            "Frylock",
+            "Oglethorpe"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Ignignokt",
+        "clue": "the green Mooninite who often leads the pixelated alien duo",
+        "wrong": [
+            "Err",
+            "Oglethorpe",
+            "Emory"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Err",
+        "clue": "the smaller purple Mooninite partnered with Ignignokt",
+        "wrong": [
+            "Ignignokt",
+            "Meatwad",
+            "MC Pee Pants"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "MC Pee Pants",
+        "clue": "the giant spider rapper voiced as a ridiculous hip-hop character",
+        "wrong": [
+            "Sir Loin",
+            "Handbanana",
+            "Rabbot"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Aqua Teen Hunger Force",
+        "answer": "Rabbot",
+        "clue": "the robotic rabbit from the first Aqua Teen episode",
+        "wrong": [
+            "Handbanana",
+            "Cybernetic Ghost",
+            "Willie Nelson"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Homer Simpson",
+        "clue": "the safety inspector in Sector 7-G who often says D'oh",
+        "wrong": [
+            "Bart Simpson",
+            "Ned Flanders",
+            "Waylon Smithers"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Marge Simpson",
+        "clue": "the blue-haired mother of the Simpson family",
+        "wrong": [
+            "Lisa Simpson",
+            "Patty Bouvier",
+            "Edna Krabappel"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Bart Simpson",
+        "clue": "the prankster son known for troublemaking and skateboarding",
+        "wrong": [
+            "Milhouse Van Houten",
+            "Nelson Muntz",
+            "Ralph Wiggum"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Lisa Simpson",
+        "clue": "the intelligent saxophone-playing daughter",
+        "wrong": [
+            "Maggie Simpson",
+            "Janey Powell",
+            "Allison Taylor"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Maggie Simpson",
+        "clue": "the pacifier-sucking baby of the Simpson family",
+        "wrong": [
+            "Lisa Simpson",
+            "Ling Bouvier",
+            "Gerald Samson"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Mr. Burns",
+        "clue": "the elderly owner of the Springfield Nuclear Power Plant",
+        "wrong": [
+            "Waylon Smithers",
+            "Kent Brockman",
+            "Mayor Quimby"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Waylon Smithers",
+        "clue": "Mr. Burns' loyal assistant",
+        "wrong": [
+            "Lenny Leonard",
+            "Carl Carlson",
+            "Seymour Skinner"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Moe Szyslak",
+        "clue": "the bartender who runs Moe's Tavern",
+        "wrong": [
+            "Barney Gumble",
+            "Apu Nahasapeemapetilon",
+            "Chief Wiggum"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Apu Nahasapeemapetilon",
+        "clue": "the longtime Kwik-E-Mart clerk",
+        "wrong": [
+            "Moe Szyslak",
+            "Dr. Hibbert",
+            "Krusty"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Simpsons",
+        "answer": "Ned Flanders",
+        "clue": "Homer's extremely friendly religious neighbor",
+        "wrong": [
+            "Reverend Lovejoy",
+            "Principal Skinner",
+            "Chief Wiggum"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Peter Griffin",
+        "clue": "the chaotic father of the Griffin family",
+        "wrong": [
+            "Brian Griffin",
+            "Joe Swanson",
+            "Cleveland Brown"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Lois Griffin",
+        "clue": "Peter's wife and the mother of Meg, Chris, and Stewie",
+        "wrong": [
+            "Marge Simpson",
+            "Peggy Hill",
+            "Francine Smith"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Stewie Griffin",
+        "clue": "the unusually intelligent baby with a dramatic personality",
+        "wrong": [
+            "Chris Griffin",
+            "Rallo Tubbs",
+            "Bobby Hill"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Brian Griffin",
+        "clue": "the Griffin family dog who talks and writes",
+        "wrong": [
+            "Santa's Little Helper",
+            "Vinny",
+            "Jasper"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Meg Griffin",
+        "clue": "the often-mocked oldest Griffin child",
+        "wrong": [
+            "Lisa Simpson",
+            "Hayley Smith",
+            "Luanne Platter"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Chris Griffin",
+        "clue": "the Griffin son voiced by Seth Green",
+        "wrong": [
+            "Neil Goldman",
+            "Kevin Swanson",
+            "Bobby Hill"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Glenn Quagmire",
+        "clue": "Peter's neighbor known for 'Giggity'",
+        "wrong": [
+            "Joe Swanson",
+            "Cleveland Brown",
+            "Mort Goldman"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Cleveland Brown",
+        "clue": "the neighbor who later received a spinoff",
+        "wrong": [
+            "Joe Swanson",
+            "Tom Tucker",
+            "Adam West"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Joe Swanson",
+        "clue": "the police officer neighbor of the Griffins",
+        "wrong": [
+            "Glenn Quagmire",
+            "Carter Pewterschmidt",
+            "Horace"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Family Guy",
+        "answer": "Quahog",
+        "clue": "the fictional Rhode Island town where Family Guy is set",
+        "wrong": [
+            "Springfield",
+            "Arlen",
+            "Langley Falls"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Hank Hill",
+        "clue": "the propane salesman who values order, lawn care, and responsibility",
+        "wrong": [
+            "Dale Gribble",
+            "Bill Dauterive",
+            "Boomhauer"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Peggy Hill",
+        "clue": "Hank's confident substitute-teacher wife",
+        "wrong": [
+            "Nancy Gribble",
+            "Minh Souphanousinphone",
+            "Luanne Platter"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Bobby Hill",
+        "clue": "Hank and Peggy's son who loves comedy and performance",
+        "wrong": [
+            "Joseph Gribble",
+            "Connie Souphanousinphone",
+            "Dooley"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Dale Gribble",
+        "clue": "the conspiracy-minded exterminator who uses the alias Rusty Shackleford",
+        "wrong": [
+            "Bill Dauterive",
+            "Boomhauer",
+            "Buck Strickland"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Boomhauer",
+        "clue": "Hank's fast-talking neighbor with a famously hard-to-follow voice",
+        "wrong": [
+            "Bill Dauterive",
+            "Dale Gribble",
+            "Lucky"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Bill Dauterive",
+        "clue": "Hank's lonely barber friend and former high school football teammate",
+        "wrong": [
+            "Dale Gribble",
+            "Buck Strickland",
+            "Kahn"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Strickland Propane",
+        "clue": "the company where Hank works",
+        "wrong": [
+            "Mega Lo Mart",
+            "Kwik-E-Mart",
+            "Pawtucket Brewery"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Luanne Platter",
+        "clue": "Peggy's niece who lives with the Hills for much of the show",
+        "wrong": [
+            "Connie",
+            "Nancy",
+            "Minh"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Arlen",
+        "clue": "the fictional Texas town where King of the Hill is set",
+        "wrong": [
+            "Springfield",
+            "Quahog",
+            "Woodcrest"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "King of the Hill",
+        "answer": "Buck Strickland",
+        "clue": "Hank's boss at Strickland Propane",
+        "wrong": [
+            "Cotton Hill",
+            "Kahn Souphanousinphone",
+            "Ted Wassanasong"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Simba",
+        "clue": "the lion cub protagonist of The Lion King",
+        "wrong": [
+            "Mowgli",
+            "Kovu",
+            "Bambi"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Ariel",
+        "clue": "the mermaid princess who wants to be part of the human world",
+        "wrong": [
+            "Belle",
+            "Jasmine",
+            "Moana"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Ursula",
+        "clue": "the sea witch who makes a dangerous contract with Ariel",
+        "wrong": [
+            "Maleficent",
+            "Cruella de Vil",
+            "Yzma"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Mulan",
+        "clue": "the heroine who disguises herself to take her father's place in war",
+        "wrong": [
+            "Pocahontas",
+            "Raya",
+            "Merida"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Genie",
+        "clue": "the magical blue wish-granter in Aladdin",
+        "wrong": [
+            "Jafar",
+            "Mushu",
+            "Kronk"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Yzma",
+        "clue": "the villain in The Emperor's New Groove who schemes with Kronk",
+        "wrong": [
+            "Ursula",
+            "Madam Mim",
+            "Mother Gothel"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Experiment 626",
+        "clue": "the alien designation of Stitch",
+        "wrong": [
+            "WALL-E",
+            "Baymax",
+            "EVE"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Miguel",
+        "clue": "the young musician at the center of Coco",
+        "wrong": [
+            "Ernesto de la Cruz",
+            "Hiro Hamada",
+            "Luca"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Moana",
+        "clue": "the wayfinder chosen by the ocean",
+        "wrong": [
+            "Raya",
+            "Elsa",
+            "Mirabel"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Disney Films",
+        "answer": "Maleficent",
+        "clue": "the villain who curses Princess Aurora",
+        "wrong": [
+            "The Evil Queen",
+            "Lady Tremaine",
+            "Cruella de Vil"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Ghostface",
+        "clue": "the masked killer identity used in the Scream franchise",
+        "wrong": [
+            "Michael Myers",
+            "Jason Voorhees",
+            "Leatherface"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Michael Myers",
+        "clue": "the silent masked killer associated with Halloween",
+        "wrong": [
+            "Freddy Krueger",
+            "Jason Voorhees",
+            "Ghostface"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Freddy Krueger",
+        "clue": "the dream-stalking killer from A Nightmare on Elm Street",
+        "wrong": [
+            "Pinhead",
+            "Chucky",
+            "Candyman"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Jason Voorhees",
+        "clue": "the hockey-masked figure tied to Friday the 13th",
+        "wrong": [
+            "Michael Myers",
+            "Leatherface",
+            "Jigsaw"
+        ],
+        "level": 1
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Laurie Strode",
+        "clue": "the main survivor associated with Halloween",
+        "wrong": [
+            "Sidney Prescott",
+            "Nancy Thompson",
+            "Ellen Ripley"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Sidney Prescott",
+        "clue": "the recurring final girl of the Scream films",
+        "wrong": [
+            "Gale Weathers",
+            "Tatum Riley",
+            "Laurie Strode"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "The Thing",
+        "clue": "the Antarctic horror film about a shape-shifting imitation threat",
+        "wrong": [
+            "Alien",
+            "The Fly",
+            "The Mist"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Alien",
+        "clue": "the film that introduced the Xenomorph aboard the Nostromo",
+        "wrong": [
+            "Predator",
+            "Event Horizon",
+            "Species"
+        ],
+        "level": 2
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Hellraiser",
+        "clue": "the franchise associated with the Lament Configuration puzzle box",
+        "wrong": [
+            "Candyman",
+            "Insidious",
+            "Sinister"
+        ],
+        "level": 3
+    },
+    {
+        "cat": "Horror Films",
+        "answer": "Midsommar",
+        "clue": "the daylight folk-horror film centered around a festival nightmare",
+        "wrong": [
+            "Hereditary",
+            "The Witch",
+            "The Ritual"
+        ],
+        "level": 3
+    }
+];
+
+  const TEMPLATES = [
+    "Which answer best matches this clue: {clue}?",
+    "In {cat}, who or what is described as {clue}?",
+    "Fan-detail check: choose the reference that fits '{clue}'.",
+    "Which option correctly connects to this {cat} detail: {clue}?",
+    "Pick the right answer for this clue: {clue}.",
+    "Hard memory check — {clue}. What is the answer?",
+    "What {cat} reference is being described here: {clue}?",
+    "Only one option fits: {clue}. Which is it?",
+    "Which name/title belongs to this description: {clue}?",
+    "Trivia card: {clue}. Select the correct match.",
+    "Which answer would a specific fan connect with: {clue}?",
+    "What is the smart match for this pop-culture clue: {clue}?",
+    "Identify the correct reference: {clue}.",
+    "Which option is not a distractor for this clue: {clue}?",
+    "Choose the canon-style match: {clue}."
+];
+
+  function buildQuestionBank() {
+    const cards = [];
+    let id = 1;
+    FACTS.forEach((fact, factIndex) => {
+      TEMPLATES.forEach((template, templateIndex) => {
+        const difficulty = Math.min(10, fact.level + Math.floor(templateIndex / 3));
+        cards.push({
+          id: `trivia-${String(id++).padStart(4, '0')}`,
+          level: difficulty,
+          cat: fact.cat,
+          q: template.replaceAll('{clue}', fact.clue).replaceAll('{cat}', fact.cat),
+          a: fact.answer,
+          wrong: [...fact.wrong],
+          seed: `${factIndex}-${templateIndex}`
+        });
+      });
+    });
+    return cards;
+  }
+
+  const QUESTIONS = buildQuestionBank();
+  const maxCards = 20;
 
   let level = 1;
+  let highestLevel = 1;
   let score = 0;
   let streak = 0;
   let asked = 0;
@@ -62,9 +839,12 @@
   let locked = false;
   let deck = [];
   let advanceTimer = null;
-  const maxCards = 20;
+  let history = [];
 
-  const shuffle = (arr) => arr.map(v => [Math.random(), v]).sort((a, b) => a[0] - b[0]).map(pair => pair[1]);
+  const shuffle = (arr) => arr
+    .map(value => [Math.random(), value])
+    .sort((a, b) => a[0] - b[0])
+    .map(pair => pair[1]);
 
   function setMessage(text, type = '') {
     messageEl.textContent = text;
@@ -75,11 +855,13 @@
     levelEl.textContent = `Level ${level}`;
     scoreEl.textContent = `Score ${score}`;
     streakEl.textContent = `Streak ${streak}`;
-    categoryEl.textContent = current ? current.cat : 'Mixed Deck';
+    categoryEl.textContent = current ? current.cat : `Bank: ${QUESTIONS.length} cards`;
   }
 
   function getPool() {
-    return QUESTIONS.filter(q => q.level <= Math.min(5, level + 1));
+    const maxLevel = Math.min(10, level + 1);
+    const pool = QUESTIONS.filter(card => card.level <= maxLevel && !history.includes(card.id));
+    return pool.length ? pool : QUESTIONS.filter(card => card.level <= maxLevel);
   }
 
   function refillDeck() {
@@ -100,13 +882,20 @@
       finishRun();
       return;
     }
+
     locked = false;
     if (!deck.length) refillDeck();
     current = deck.pop();
+    if (!current) {
+      finishRun();
+      return;
+    }
+
+    history.push(current.id);
     asked++;
 
     animateCard();
-    diffEl.textContent = `${current.cat} • Level ${current.level} • Card ${asked}/${maxCards}`;
+    diffEl.textContent = `${current.cat} • Difficulty ${current.level}/10 • Card ${asked}/${maxCards}`;
     questionEl.textContent = current.q;
     answersEl.innerHTML = '';
 
@@ -136,15 +925,16 @@
     if (isCorrect) {
       correct++;
       streak++;
-      const gained = 10 + level * 5 + streak;
+      const gained = 10 + current.level * 4 + streak;
       score += gained;
       btn.classList.add('correct');
-      if (streak > 0 && streak % 3 === 0) level = Math.min(5, level + 1);
+      if (streak > 0 && streak % 2 === 0) level = Math.min(10, level + 1);
+      highestLevel = Math.max(highestLevel, level);
       setMessage(`Correct. +${gained} points. Next card loading...`, 'good');
     } else {
       wrong++;
       streak = 0;
-      const lost = 7 + level * 3;
+      const lost = 8 + current.level * 3;
       score -= lost;
       btn.classList.add('wrong');
       level = Math.max(1, level - 1);
@@ -152,7 +942,7 @@
     }
 
     syncStats();
-    advanceTimer = setTimeout(() => nextCard(), isCorrect ? 900 : 1500);
+    advanceTimer = setTimeout(() => nextCard(), isCorrect ? 850 : 1500);
   }
 
   function finishRun() {
@@ -161,7 +951,7 @@
     current = null;
     diffEl.textContent = 'Run Complete';
     questionEl.textContent = `Final Score: ${score}`;
-    answersEl.innerHTML = `<div class="trivia-summary">Correct: ${correct}<br>Wrong: ${wrong}<br>Highest Level Reached: ${level}<br>Cards Played: ${asked}</div>`;
+    answersEl.innerHTML = `<div class="trivia-summary">Correct: ${correct}<br>Wrong: ${wrong}<br>Highest Level Reached: ${highestLevel}<br>Cards Played: ${asked}<br>Total Bank Available: ${QUESTIONS.length} cards</div>`;
     setMessage('Run complete. Press Reset to start over.', 'good');
     syncStats();
   }
@@ -169,6 +959,7 @@
   function startRun() {
     clearTimeout(advanceTimer);
     level = 1;
+    highestLevel = 1;
     score = 0;
     streak = 0;
     asked = 0;
@@ -177,6 +968,7 @@
     current = null;
     locked = false;
     deck = [];
+    history = [];
     syncStats();
     nextCard();
   }
@@ -190,5 +982,5 @@
   });
 
   syncStats();
-  setMessage('Press Start Trivia to begin.', '');
+  setMessage(`Press Start Trivia to begin. ${QUESTIONS.length} cards loaded.`, '');
 })();
