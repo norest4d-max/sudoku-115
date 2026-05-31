@@ -1,0 +1,169 @@
+.quote-panel {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 3px solid var(--ink);
+}
+
+.quote-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.quote-header h2 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  text-transform: uppercase;
+  line-height: .9;
+}
+
+.quote-header p:not(.eyebrow) {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.quote-controls,
+.quote-filters,
+.quote-stats,
+.quote-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quote-controls,
+.quote-filters {
+  justify-content: flex-end;
+}
+
+.quote-filters,
+.quote-stats {
+  margin: 14px 0;
+}
+
+.quote-filter.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.quote-stats span {
+  border: 2px solid var(--ink);
+  background: var(--paper-deep);
+  padding: 7px 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .9rem;
+}
+
+.quote-card {
+  border: 3px solid var(--ink);
+  background:
+    linear-gradient(90deg, rgba(8, 8, 8, .06) 1px, transparent 1px) 0 0 / 22px 22px,
+    #fffdf7;
+  box-shadow: 4px 4px 0 var(--ink);
+  min-height: 280px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-card::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1px dashed rgba(8, 8, 8, .32);
+  pointer-events: none;
+}
+
+.quote-card.flip {
+  animation: quoteFlip .28s ease;
+}
+
+.quote-meta,
+.quote-prompt {
+  position: relative;
+  margin: 0;
+  color: var(--ink-soft);
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.quote-card blockquote {
+  position: relative;
+  margin: 14px 0 12px;
+  padding: 10px 0 10px 18px;
+  border-left: 5px solid var(--ink);
+  font-size: clamp(1.35rem, 4.8vw, 2.35rem);
+  line-height: 1.12;
+  font-weight: 900;
+}
+
+.quote-choices {
+  position: relative;
+  margin-top: 14px;
+}
+
+.quote-choice {
+  flex: 1 1 calc(33.333% - 8px);
+  min-width: 180px;
+  min-height: 58px;
+  text-align: left;
+  white-space: normal;
+}
+
+.quote-choice.correct {
+  background: var(--success);
+  color: #fff;
+}
+
+.quote-choice.wrong {
+  background: var(--danger);
+  color: #fff;
+}
+
+@keyframes quoteFlip {
+  0% { transform: rotateX(0deg) scale(1); }
+  45% { transform: rotateX(8deg) scale(.99); }
+  100% { transform: rotateX(0deg) scale(1); }
+}
+
+@media (max-width: 820px) {
+  .quote-header {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-controls,
+  .quote-filters {
+    justify-content: stretch;
+  }
+
+  .quote-controls button,
+  .quote-filters button,
+  .quote-choice {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .quote-panel {
+    margin-top: 16px;
+    padding-top: 14px;
+  }
+
+  .quote-card {
+    min-height: 250px;
+    padding: 13px;
+  }
+
+  .quote-card::before {
+    inset: 7px;
+  }
+
+  .quote-card blockquote {
+    padding-left: 12px;
+    border-left-width: 4px;
+  }
+}
