@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import SectionHeader from '../components/SectionHeader.jsx';
 import { buildTriviaQuestions } from '../data/triviaData.js';
 import { shuffle } from '../utils/random.js';
@@ -7,13 +7,14 @@ const maxCards = 25;
 
 export default function TriviaCards() {
   const questions = useMemo(() => buildTriviaQuestions(), []);
+  const timerRef = useRef(null);
   const [level, setLevel] = useState(1);
   const [highestLevel, setHighestLevel] = useState(1);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [asked, setAsked] = useState(0);
   const [correct, setCorrect] = useState(0);
-  const [wrong, setWrong] = useState(0);
+  const [missed, setMissed] = useState(0);
   const [current, setCurrent] = useState(null);
   const [locked, setLocked] = useState(false);
   const [deck, setDeck] = useState([]);
@@ -23,22 +24,37 @@ export default function TriviaCards() {
   const [message, setMessage] = useState(`Press Start Trivia to begin. ${questions.length} cards loaded.`);
   const [messageType, setMessageType] = useState('');
 
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+
   function getPool(nextLevel = level, nextHistory = history) {
     const maxLevel = Math.min(10, nextLevel + 2);
     const fresh = questions.filter(card => card.level <= maxLevel && !nextHistory.includes(card.id));
     return fresh.length ? fresh : questions.filter(card => card.level <= maxLevel);
   }
 
-  function drawCard(nextDeck = deck, nextAsked = asked, nextHistory = history) {
+  function finishRun() {
+    clearTimeout(timerRef.current);
+    setLocked(true);
+    setCurrent(null);
+    setChoices([]);
+    setMessage('Run complete. Press Reset to start over.');
+    setMessageType('good');
+  }
+
+  function drawCard(nextDeck = deck, nextAsked = asked, nextHistory = history, nextLevel = level) {
+    clearTimeout(timerRef.current);
     if (nextAsked >= maxCards) {
       finishRun();
       return;
     }
-    const readyDeck = nextDeck.length ? nextDeck : shuffle(getPool(level, nextHistory));
+    const readyDeck = nextDeck.length ? nextDeck : shuffle(getPool(nextLevel, nextHistory));
     const nextCurrent = readyDeck[readyDeck.length - 1];
-    const remaining = readyDeck.slice(0, -1);
+    if (!nextCurrent) {
+      finishRun();
+      return;
+    }
     setCurrent(nextCurrent);
-    setDeck(remaining);
+    setDeck(readyDeck.slice(0, -1));
     setAsked(nextAsked + 1);
     setHistory([...nextHistory, nextCurrent.id]);
     setChoices(shuffle([nextCurrent.a, ...nextCurrent.wrong]));
@@ -49,52 +65,56 @@ export default function TriviaCards() {
   }
 
   function startRun() {
+    clearTimeout(timerRef.current);
     setLevel(1);
     setHighestLevel(1);
     setScore(0);
     setStreak(0);
     setAsked(0);
     setCorrect(0);
-    setWrong(0);
+    setMissed(0);
     setHistory([]);
     setDeck([]);
-    drawCard([], 0, []);
+    drawCard([], 0, [], 1);
   }
 
   function chooseAnswer(choice) {
     if (locked || !current) return;
+    clearTimeout(timerRef.current);
     setLocked(true);
     setPicked(choice);
     const isCorrect = choice === current.a;
+    let nextLevel = level;
 
     if (isCorrect) {
       const nextStreak = streak + 1;
-      const nextLevel = nextStreak > 0 && nextStreak % 2 === 0 ? Math.min(10, level + 1) : level;
+      nextLevel = nextStreak % 2 === 0 ? Math.min(10, level + 1) : level;
       const gained = 12 + current.level * 5 + nextStreak;
       setCorrect(value => value + 1);
       setStreak(nextStreak);
       setLevel(nextLevel);
       setHighestLevel(value => Math.max(value, nextLevel));
       setScore(value => value + gained);
-      setMessage(`Correct. +${gained} points.`);
+      setMessage(`Correct. +${gained} points. Next card loading...`);
       setMessageType('good');
     } else {
       const lost = 8 + current.level * 3;
-      setWrong(value => value + 1);
+      nextLevel = Math.max(1, level - 1);
+      setMissed(value => value + 1);
       setStreak(0);
-      setLevel(value => Math.max(1, value - 1));
+      setLevel(nextLevel);
       setScore(value => value - lost);
-      setMessage(`Wrong. -${lost} points. Correct: ${current.a}.`);
+      setMessage(`Incorrect. -${lost} points. Answer: ${current.a}. Next card loading...`);
       setMessageType('bad');
     }
+
+    timerRef.current = setTimeout(() => drawCard(deck, asked, history, nextLevel), isCorrect ? 900 : 1500);
   }
 
-  function finishRun() {
-    setLocked(true);
-    setCurrent(null);
-    setChoices([]);
-    setMessage('Run complete. Press Reset to start over.');
-    setMessageType('good');
+  function skipCard() {
+    clearTimeout(timerRef.current);
+    if (!current && asked === 0) startRun();
+    else drawCard();
   }
 
   const runComplete = !current && asked > 0;
@@ -105,7 +125,7 @@ export default function TriviaCards() {
         actions={(
           <>
             <button onClick={startRun} type="button">Start Trivia</button>
-            <button onClick={() => (!current && asked === 0 ? startRun() : drawCard())} type="button">Next Card</button>
+            <button onClick={skipCard} type="button">Next Card</button>
             <button onClick={startRun} type="button">Reset</button>
           </>
         )}
@@ -143,7 +163,7 @@ export default function TriviaCards() {
           )) : runComplete ? (
             <div className="trivia-summary">
               Correct: {correct}<br />
-              Wrong: {wrong}<br />
+              Missed: {missed}<br />
               Highest Level Reached: {highestLevel}<br />
               Cards Played: {asked}<br />
               Total Bank Available: {questions.length} cards
