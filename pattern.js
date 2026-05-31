@@ -78,7 +78,7 @@
       btn.type = 'button';
       btn.className = 'pattern-tile';
       btn.dataset.index = String(i);
-      btn.textContent = i + 1;
+      btn.setAttribute('aria-label', `Pattern tile ${i + 1}`);
       btn.addEventListener('click', () => handleTilePress(i));
       grid.appendChild(btn);
     }
@@ -133,7 +133,7 @@
     playing = false;
     setTilesDisabled(false);
     updateStats();
-    setMessage('Your turn. Match the full pattern.', 'good');
+    setMessage('Your turn. Match the full pattern by position.', 'good');
   }
 
   function enterPatternMode() {
@@ -229,5 +229,5 @@
 
   buildGrid();
   updateStats();
-  setMessage('Press Start Pattern. Slow first, then longer and harder. One wrong tap ends the run.', '');
+  setMessage('Press Start Pattern. No numbers now — memorize the tile positions.', '');
 })();
