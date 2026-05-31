@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#050505" />
   <title>Sudoku 115 — Paper Ink</title>
-  <link rel="stylesheet" href="./style.css?v=6" />
-  <link rel="stylesheet" href="./pattern.css?v=6" />
-  <link rel="stylesheet" href="./crossword.css?v=6" />
+  <link rel="stylesheet" href="./style.css?v=8" />
+  <link rel="stylesheet" href="./pattern.css?v=8" />
+  <link rel="stylesheet" href="./crossword.css?v=8" />
+  <link rel="stylesheet" href="./trivia.css?v=8" />
 </head>
 <body>
   <main class="app-shell">
     <section class="hero panel">
       <p class="eyebrow">Paper // Ink // Focus</p>
       <h1>Sudoku 115</h1>
-      <p class="tagline">A black and white paper puzzle table built for clean thinking, pencil marks, mistakes, and replay.</p>
+      <p class="tagline">A black and white paper puzzle table built for clean thinking, memory, trivia, mistakes, and replay.</p>
     </section>
 
     <section class="menu panel" aria-label="Sudoku menu">
@@ -93,7 +94,7 @@
           <div>
             <p class="eyebrow">Bottom Puzzle // Cartoon Logic</p>
             <h2>Cartoon Crossword</h2>
-            <p>Regular Show and Cartoon Network references in a real crossword grid. Pick a clue, type letters, and check your work.</p>
+            <p>Cartoon references in a real crossword grid. Pick a clue, type letters, and check your work.</p>
           </div>
           <div class="crossword-controls">
             <button class="crossword-difficulty active" data-crossword="easy">Easy</button>
@@ -117,10 +118,38 @@
         </div>
         <p id="crosswordMessage" class="message">Choose a difficulty and fill the grid.</p>
       </section>
+
+      <section id="triviaPanel" class="trivia-panel" aria-label="Trivia card game">
+        <div class="trivia-header">
+          <div>
+            <p class="eyebrow">Bottom Cards // Trivia Deck</p>
+            <h2>Trivia Cards</h2>
+            <p>Four-answer TV and film trivia. Answers shuffle every round and the deck gets harder when your streak rises.</p>
+          </div>
+          <div class="trivia-controls">
+            <button id="triviaStartBtn">Start Trivia</button>
+            <button id="triviaNextBtn">Next Card</button>
+            <button id="triviaResetBtn">Reset</button>
+          </div>
+        </div>
+        <div class="trivia-stats">
+          <span id="triviaLevel">Level 1</span>
+          <span id="triviaScore">Score 0</span>
+          <span id="triviaStreak">Streak 0</span>
+          <span id="triviaCategory">Mixed Deck</span>
+        </div>
+        <article class="trivia-card">
+          <p id="triviaDifficulty" class="trivia-difficulty">Press Start Trivia</p>
+          <h3 id="triviaQuestion">Your question will appear here.</h3>
+          <div id="triviaAnswers" class="trivia-answers"></div>
+        </article>
+        <p id="triviaMessage" class="message">Ready.</p>
+      </section>
     </section>
   </main>
-  <script defer src="./script.js?v=6"></script>
-  <script defer src="./pattern.js?v=6"></script>
-  <script defer src="./crossword.js?v=6"></script>
+  <script defer src="./script.js?v=8"></script>
+  <script defer src="./pattern.js?v=8"></script>
+  <script defer src="./crossword.js?v=8"></script>
+  <script defer src="./trivia.js?v=8"></script>
 </body>
 </html>
