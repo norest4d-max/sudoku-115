@@ -40,8 +40,11 @@ export default function GuessThatQuote() {
     const sameType = filteredCards(nextFilter)
       .filter(other => other.type === card.type && other.answer !== card.answer)
       .map(other => other.answer);
-    const unique = [...new Set(sameType)];
-    return shuffle([card.answer, ...shuffle(unique).slice(0, 2)]);
+    const mixedFallback = quotes
+      .filter(other => other.answer !== card.answer)
+      .map(other => other.answer);
+    const unique = [...new Set([...sameType, ...mixedFallback])];
+    return shuffle([card.answer, ...shuffle(unique).slice(0, 3)]);
   }
 
   function drawCard(nextDeck = deck, nextAsked = asked, nextHistory = history, nextFilter = filter) {
@@ -51,6 +54,10 @@ export default function GuessThatQuote() {
     }
     const readyDeck = nextDeck.length ? nextDeck : shuffle(getPool(nextFilter, level, nextHistory));
     const nextCurrent = readyDeck[readyDeck.length - 1];
+    if (!nextCurrent) {
+      finishRun();
+      return;
+    }
     const remaining = readyDeck.slice(0, -1);
     setCurrent(nextCurrent);
     setDeck(remaining);
@@ -59,7 +66,7 @@ export default function GuessThatQuote() {
     setChoices(choicesFor(nextCurrent, nextFilter));
     setLocked(false);
     setPicked('');
-    setMessage('Choose one of three.');
+    setMessage('Choose one of four.');
     setMessageType('');
   }
 
@@ -130,7 +137,7 @@ export default function GuessThatQuote() {
         eyebrow="Bottom Lines // Quote Bank"
         title="Guess That Quote"
       >
-        Ink-dry quote cards with three possible answers. Adult Swim characters and horror movie pulls share the deck.
+        Ink-dry quote cards with four possible answers. Adult Swim characters and horror movie pulls share the deck.
       </SectionHeader>
       <div className="quote-filters" aria-label="Quote deck filter">
         {[
@@ -154,7 +161,7 @@ export default function GuessThatQuote() {
           {current ? `${current.type === 'adult' ? current.source : 'Horror Movie'} | Difficulty ${current.level}/10 | Card ${asked}/${maxCards}` : runComplete ? 'Run Complete' : 'Press Start Quotes'}
         </p>
         <blockquote>{current ? current.line : runComplete ? `Final Score: ${score}` : 'Your quote card will appear here.'}</blockquote>
-        <p className="quote-prompt">{current ? current.prompt : runComplete ? `Correct ${correct} | Wrong ${wrong}` : 'Pick one of three.'}</p>
+        <p className="quote-prompt">{current ? current.prompt : runComplete ? `Correct ${correct} | Wrong ${wrong}` : 'Pick one of four.'}</p>
         <div className="quote-choices">
           {current ? choices.map(choice => (
             <button
