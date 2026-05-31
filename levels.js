@@ -551,10 +551,9 @@
     }
 
     function enterPatternMode() {
-      document.body.classList.add('pattern-mode');
-      panel.classList.add('pattern-fullscreen');
-      homeBtn.hidden = false;
-      panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.body.classList.remove('pattern-mode');
+      panel.classList.remove('pattern-fullscreen');
+      homeBtn.hidden = true;
     }
 
     function leavePatternMode() {
@@ -564,7 +563,6 @@
       acceptingInput = false;
       playing = false;
       setTilesDisabled(false);
-      document.querySelector('.hero')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function saveStats() {
