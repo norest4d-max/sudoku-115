@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#050505" />
   <title>Sudoku 115 — Paper Ink</title>
-  <link rel="stylesheet" href="./style.css?v=5" />
-  <link rel="stylesheet" href="./pattern.css?v=5" />
+  <link rel="stylesheet" href="./style.css?v=6" />
+  <link rel="stylesheet" href="./pattern.css?v=6" />
+  <link rel="stylesheet" href="./crossword.css?v=6" />
 </head>
 <body>
   <main class="app-shell">
@@ -72,7 +73,7 @@
         <div>
           <p class="eyebrow">Bottom Drill // Memory Pattern</p>
           <h2>Pattern Drill</h2>
-          <p>Watch the ink lights. Repeat the path. Wrong taps do not fail you — they replay and train the pattern.</p>
+          <p>Watch the ink lights. Repeat the path. One wrong tap ends the run.</p>
         </div>
         <div class="pattern-controls">
           <button id="patternStartBtn">Start Pattern</button>
@@ -81,14 +82,45 @@
       </div>
       <div class="pattern-stats">
         <span id="patternLevel">Level 1</span>
-        <span id="patternStreak">Comfort: 0/3</span>
-        <span id="patternSpeed">Speed: Calm</span>
+        <span id="patternStreak">Pattern: 0/0</span>
+        <span id="patternSpeed">Speed: Slow</span>
       </div>
       <div id="patternGrid" class="pattern-grid" aria-label="Simon says pattern grid"></div>
       <p id="patternMessage" class="message">Press Start Pattern. Match the flashed path.</p>
+
+      <section id="crosswordPanel" class="crossword-panel" aria-label="Cartoon crossword puzzle">
+        <div class="crossword-header">
+          <div>
+            <p class="eyebrow">Bottom Puzzle // Cartoon Logic</p>
+            <h2>Cartoon Crossword</h2>
+            <p>Regular Show and Cartoon Network references in a real crossword grid. Pick a clue, type letters, and check your work.</p>
+          </div>
+          <div class="crossword-controls">
+            <button class="crossword-difficulty active" data-crossword="easy">Easy</button>
+            <button class="crossword-difficulty" data-crossword="medium">Medium</button>
+            <button class="crossword-difficulty" data-crossword="hard">Hard</button>
+          </div>
+        </div>
+        <div class="crossword-actions">
+          <button id="crosswordCheckBtn">Check</button>
+          <button id="crosswordRevealBtn">Reveal Letter</button>
+          <button id="crosswordClearBtn">Clear</button>
+        </div>
+        <div class="crossword-layout">
+          <div id="crosswordGrid" class="crossword-grid" aria-label="Crossword grid"></div>
+          <div class="clue-box">
+            <h3>Across</h3>
+            <ol id="acrossClues"></ol>
+            <h3>Down</h3>
+            <ol id="downClues"></ol>
+          </div>
+        </div>
+        <p id="crosswordMessage" class="message">Choose a difficulty and fill the grid.</p>
+      </section>
     </section>
   </main>
-  <script defer src="./script.js?v=5"></script>
-  <script defer src="./pattern.js?v=5"></script>
+  <script defer src="./script.js?v=6"></script>
+  <script defer src="./pattern.js?v=6"></script>
+  <script defer src="./crossword.js?v=6"></script>
 </body>
 </html>
