@@ -1,0 +1,112 @@
+.trivia-panel {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 3px solid var(--ink);
+}
+
+.trivia-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.trivia-header h2 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  text-transform: uppercase;
+  line-height: .9;
+}
+
+.trivia-header p:not(.eyebrow) {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.trivia-controls,
+.trivia-stats,
+.trivia-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.trivia-stats {
+  margin: 14px 0;
+}
+
+.trivia-stats span {
+  border: 2px solid var(--ink);
+  background: var(--paper-deep);
+  padding: 7px 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .9rem;
+}
+
+.trivia-card {
+  border: 3px solid var(--ink);
+  background: #fffdf7;
+  padding: 16px;
+  margin-top: 14px;
+  box-shadow: 4px 4px 0 var(--ink);
+  min-height: 240px;
+  transform-style: preserve-3d;
+}
+
+.trivia-card.flip {
+  animation: cardFlip .32s ease;
+}
+
+.trivia-card h3 {
+  font-size: clamp(1.2rem, 4.5vw, 2rem);
+  margin: 6px 0 14px;
+  line-height: 1.15;
+}
+
+.trivia-difficulty {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.trivia-answer {
+  flex: 1 1 calc(50% - 8px);
+  min-height: 56px;
+  text-align: left;
+  white-space: normal;
+}
+
+.trivia-answer.correct {
+  background: #174f25;
+  color: #fff;
+}
+
+.trivia-answer.wrong {
+  background: #8d1616;
+  color: #fff;
+}
+
+.trivia-summary {
+  border: 2px solid var(--ink);
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--paper-deep);
+  font-weight: 900;
+}
+
+@keyframes cardFlip {
+  0% { transform: rotateY(0deg) scale(1); }
+  45% { transform: rotateY(90deg) scale(.98); }
+  100% { transform: rotateY(0deg) scale(1); }
+}
+
+@media (max-width: 700px) {
+  .trivia-header { grid-template-columns: 1fr; }
+  .trivia-controls button,
+  .trivia-answer { flex: 1 1 100%; }
+  .trivia-card { padding: 12px; min-height: 220px; }
+}
