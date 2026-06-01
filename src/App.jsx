@@ -5,6 +5,7 @@ import TriviaCards from './games/TriviaCards.jsx';
 import GuessThatQuote from './games/GuessThatQuote.jsx';
 import PrecalculusTrainer from './games/PrecalculusTrainer.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
+import '../precalc.css';
 
 export default function App() {
   return (
