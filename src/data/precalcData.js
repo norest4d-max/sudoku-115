@@ -1,5 +1,4 @@
 const gcd = (a, b) => (b === 0 ? Math.abs(a) : gcd(b, a % b));
-const fmt = n => Number.isInteger(n) ? String(n) : String(Number(n.toFixed(3)));
 const frac = (n, d) => {
   const g = gcd(n, d);
   const sign = d < 0 ? -1 : 1;
@@ -13,6 +12,35 @@ function uniqueChoices(correct, distractors) {
   let pad = 1;
   while (out.length < 4) out.push(`${correct} ${pad++}`);
   return out.slice(0, 4);
+}
+
+function formatComplex(real, imag) {
+  if (imag === 0) return String(real);
+  if (real === 0) return imag === 1 ? 'i' : imag === -1 ? '-i' : `${imag}i`;
+  const sign = imag > 0 ? '+' : '-';
+  const absImag = Math.abs(imag) === 1 ? 'i' : `${Math.abs(imag)}i`;
+  return `${real} ${sign} ${absImag}`;
+}
+
+function complexAddCard(id, r1, i1, r2, i2) {
+  const realSum = r1 + r2;
+  const imagSum = i1 + i2;
+  const correct = formatComplex(realSum, imagSum);
+  const wrong = [
+    formatComplex(r1 + i1, r2 + i2),
+    formatComplex(r1 - r2, i1 - i2),
+    formatComplex(realSum, i1 - i2),
+    formatComplex(r1 + i2, i1 + r2)
+  ];
+  return card(
+    id,
+    'Complex Numbers',
+    3 + Math.min(5, Math.floor((Math.abs(r1) + Math.abs(i1) + Math.abs(r2) + Math.abs(i2)) / 12)),
+    `Add complex numbers: (${formatComplex(r1, i1)}) + (${formatComplex(r2, i2)}).`,
+    correct,
+    wrong,
+    `Combine real parts first: ${r1} + ${r2} = ${realSum}. Combine imaginary parts second: ${i1}i + ${i2}i = ${imagSum}i. Final answer: ${correct}.`
+  );
 }
 
 const TOPICS = [
@@ -30,7 +58,8 @@ function card(id, topic, level, question, answer, wrong, hint) {
     question,
     a: String(answer),
     wrong: uniqueChoices(String(answer), wrong).filter(choice => choice !== String(answer)).slice(0, 3),
-    hint
+    hint,
+    explanation: hint
   };
 }
 
@@ -42,15 +71,15 @@ function buildCoreCards() {
     if (a === 0) continue;
     for (let b = -20; b <= 20; b++) {
       const level = Math.min(10, 1 + Math.floor(Math.abs(a) / 5) + Math.floor(Math.abs(b) / 10));
-      cards.push(card(id++, 'Linear Functions', level, `For f(x) = ${a}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}, what is f(2)?`, a * 2 + b, [a + b, 2 * b + a, a * 2 - b], 'Substitute x = 2.'));
-      cards.push(card(id++, 'Linear Functions', level, `What is the slope of y = ${a}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}?`, a, [b, -a, a + b], 'Slope-intercept form is y = mx + b.'));
+      cards.push(card(id++, 'Linear Functions', level, `For f(x) = ${a}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}, what is f(2)?`, a * 2 + b, [a + b, 2 * b + a, a * 2 - b], `Substitute x = 2: ${a}(2) ${b >= 0 ? '+' : '-'} ${Math.abs(b)} = ${a * 2 + b}.`));
+      cards.push(card(id++, 'Linear Functions', level, `What is the slope of y = ${a}x ${b >= 0 ? '+' : '-'} ${Math.abs(b)}?`, a, [b, -a, a + b], 'Slope-intercept form is y = mx + b, so the coefficient of x is the slope.'));
     }
   }
 
   for (let h = -25; h <= 24; h++) {
     for (let k = -25; k <= 24; k++) {
       const level = 2 + Math.floor((Math.abs(h) + Math.abs(k)) / 18);
-      cards.push(card(id++, 'Quadratics', level, `What is the vertex of y = (x ${h < 0 ? '+' : '-'} ${Math.abs(h)})² ${k >= 0 ? '+' : '-'} ${Math.abs(k)}?`, `(${h}, ${k})`, [`(${-h}, ${k})`, `(${h}, ${-k})`, `(${-h}, ${-k})`], 'Vertex form is y = a(x - h)^2 + k.'));
+      cards.push(card(id++, 'Quadratics', level, `What is the vertex of y = (x ${h < 0 ? '+' : '-'} ${Math.abs(h)})² ${k >= 0 ? '+' : '-'} ${Math.abs(k)}?`, `(${h}, ${k})`, [`(${-h}, ${k})`, `(${h}, ${-k})`, `(${-h}, ${-k})`], 'Vertex form is y = a(x - h)^2 + k, so the vertex is (h, k).'));
     }
   }
 
@@ -63,7 +92,7 @@ function buildCoreCards() {
   for (let base = 2; base <= 12; base++) {
     for (let exp = 1; exp <= 8; exp++) {
       const value = base ** exp;
-      cards.push(card(id++, 'Logarithms', Math.min(10, exp + 1), `Evaluate log base ${base} of ${value}.`, exp, [base, value, exp + 1], 'A logarithm asks: what exponent makes the base become the value?'));
+      cards.push(card(id++, 'Logarithms', Math.min(10, exp + 1), `Evaluate log base ${base} of ${value}.`, exp, [base, value, exp + 1], `A logarithm asks which exponent works: ${base}^${exp} = ${value}.`));
     }
   }
 
@@ -92,11 +121,12 @@ function buildCoreCards() {
     }
   }
 
-  for (let a = -10; a <= 10; a++) {
-    if (a === 0) continue;
-    for (let b = -10; b <= 10; b++) {
-      const correct = `${a + b} + ${a - b}i`;
-      cards.push(card(id++, 'Complex Numbers', 3, `Simplify (${a} + ${b}i) + (${b} + ${-b}i).`, correct, [`${a - b} + ${a + b}i`, `${a + b} - ${a - b}i`, `${a * b} + ${a + b}i`], 'Combine real parts and imaginary parts separately.'));
+  for (let r1 = -10; r1 <= 10; r1++) {
+    for (let i1 = -10; i1 <= 10; i1++) {
+      const r2 = ((r1 * 3 + i1 * 2 + 7) % 21) - 10;
+      const i2 = ((i1 * 5 - r1 + 31) % 21) - 10;
+      if (i1 === 0 && i2 === 0) continue;
+      cards.push(complexAddCard(id++, r1, i1, r2, i2));
     }
   }
 
@@ -125,6 +155,7 @@ const CONCEPTS = [
   ['Logarithms', 'What is the inverse of an exponential function?', 'A logarithmic function', ['A quadratic function','A linear function','A reciprocal function'], 2, 'Logs undo exponentials.'],
   ['Polynomial Features', 'What does a zero of a polynomial represent?', 'An x-intercept', ['A y-intercept','A vertical asymptote','The degree'], 2, 'Zeros make y = 0.'],
   ['Inequalities', 'When solving an inequality, when do you flip the sign?', 'When multiplying or dividing by a negative', ['When adding a positive','When subtracting zero','Whenever variables appear'], 2, 'Negative multiplication/division reverses order.'],
+  ['Complex Numbers', 'When adding complex numbers, what do you combine first?', 'Real with real and imaginary with imaginary', ['Real with imaginary','Only the coefficients of x','Only the constants'], 2, 'For (a + bi) + (c + di), compute (a + c) + (b + d)i.'],
   ['Function Transformations', 'What does f(x) + k do?', 'Moves the graph up k units', ['Moves right k units','Reflects over x-axis','Compresses horizontally'], 2, 'Outside changes affect vertical movement.']
 ];
 
