@@ -2,7 +2,7 @@ import SudokuGame from './games/SudokuGame.jsx';
 import PatternDrill from './games/PatternDrill.jsx';
 import CartoonCrossword from './games/CartoonCrossword.jsx';
 import TriviaCards from './games/TriviaCards.jsx';
-import GuessThatQuote from './games/GuessThatQuote.jsx';
+import QuoteStack from './games/QuoteStack.jsx';
 import PrecalculusTrainer from './games/PrecalculusTrainer.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import '../precalc.css';
@@ -27,7 +27,7 @@ export default function App() {
         <ErrorBoundary name="Pattern Drill"><PatternDrill /></ErrorBoundary>
         <ErrorBoundary name="Cartoon Crossword"><CartoonCrossword /></ErrorBoundary>
         <ErrorBoundary name="Trivia Cards"><TriviaCards /></ErrorBoundary>
-        <ErrorBoundary name="Quote Stack"><GuessThatQuote /></ErrorBoundary>
+        <ErrorBoundary name="Quote Stack"><QuoteStack /></ErrorBoundary>
         <ErrorBoundary name="Precalculus Trainer"><PrecalculusTrainer /></ErrorBoundary>
       </section>
     </main>
