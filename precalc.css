@@ -1,0 +1,95 @@
+.precalc-panel {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 3px solid var(--ink);
+}
+
+.precalc-toolbar,
+.precalc-stats,
+.precalc-answers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.precalc-toolbar label {
+  display: flex;
+  flex: 1 1 260px;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.precalc-toolbar select {
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 900;
+  padding: 10px;
+}
+
+.precalc-stats span {
+  border: 2px solid var(--ink);
+  background: var(--paper-deep);
+  padding: 7px 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .9rem;
+}
+
+.precalc-card {
+  border: 3px solid var(--ink);
+  background:
+    linear-gradient(0deg, rgba(8, 8, 8, .05) 1px, transparent 1px) 0 0 / 100% 28px,
+    #fffdf7;
+  box-shadow: 4px 4px 0 var(--ink);
+  min-height: 265px;
+  padding: 18px;
+}
+
+.precalc-meta {
+  margin: 0;
+  color: var(--ink-soft);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.precalc-card h3 {
+  font-size: clamp(1.25rem, 4.5vw, 2.35rem);
+  line-height: 1.12;
+  margin: 14px 0;
+}
+
+.precalc-answer {
+  flex: 1 1 calc(50% - 8px);
+  min-height: 58px;
+  text-align: left;
+  white-space: normal;
+}
+
+.precalc-answer.correct {
+  background: var(--success);
+  color: #fff;
+}
+
+.precalc-answer.wrong {
+  background: var(--danger);
+  color: #fff;
+}
+
+@media (max-width: 700px) {
+  .precalc-toolbar button,
+  .precalc-answer {
+    flex: 1 1 100%;
+  }
+
+  .precalc-card {
+    padding: 13px;
+  }
+}
